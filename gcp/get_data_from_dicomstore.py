@@ -1,47 +1,85 @@
 from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
+from googleapiclient import discovery
+import os
+import json
 from google.auth.transport.requests import Request
 
-
-import os
-
-
-def get_instance_ids_from_dicomestore():
+def generate_credentials_client():
+    api_version = "v1"
+    service_name = "healthcare"
+    # Returns an authorized API client by discovering the Healthcare API
+    # and using GOOGLE_APPLICATION_CREDENTIALS environment variable.
     # 認証情報の設定
     base_dir = os.path.dirname(os.path.abspath(__file__))
     credentials_file = os.path.join(base_dir, '..', 'gcp_toruk.json') 
     credentials = service_account.Credentials.from_service_account_file(credentials_file)
+    client = discovery.build(service_name, api_version, credentials=credentials)
+    return client
 
-    # Healthcare API クライアントの作成
-    healthcare_service = build('healthcare', 'v1', credentials=credentials)
+    
+# DICOM ストアの詳細を取得する
+def list_dicom_stores(project_id, location, dataset_id):
 
+    client = generate_credentials_client()
+
+    dicom_store_parent = "projects/{}/locations/{}/datasets/{}".format(project_id, location, dataset_id)
+    dicom_stores = (
+        client.projects()
+        .locations()
+        .datasets()
+        .dicomStores()
+        .list(parent=dicom_store_parent)
+        .execute()
+        .get("dicomStores", [])
+    )
+    return dicom_stores
+
+# DICOM ストアの詳細を取得する
+def get_dicom_store(project_id, location, dataset_id, dicom_store_id):
+    client = generate_credentials_client()
+
+    dicom_store_parent = "projects/{}/locations/{}/datasets/{}".format(project_id, location, dataset_id)
+    dicom_store_name = "{}/dicomStores/{}".format(dicom_store_parent, dicom_store_id)
+
+    dicom_stores = client.projects().locations().datasets().dicomStores()
+    dicom_store = dicom_stores.get(name=dicom_store_name).execute()
+
+    # print(json.dumps(dicom_store, indent=2))
+    return dicom_store
+
+def get_instance_ids_from_dicom_store(project_id, location, dataset_id, dicom_store_id):
+    client = generate_credentials_client()
+    # Healthcare APIのクライアントを作成し、認証情報を渡す
+    dicom_store_parent = f"projects/{project_id}/locations/{location}/datasets/{dataset_id}/dicomStores/{dicom_store_id}"
+
+    instance_list = []
+
+    for study in client.list_dicom_store_studies(parent=dicom_store_parent):
+        study_name = study.name
+        for series in client.list_dicom_store_series(parent=study_name):
+            series_name = series.name
+            for instance in client.list_dicom_store_instances(parent=series_name):
+                instance_id = instance.name.split('/')[-1]
+                instance_list.append(instance_id)
+
+
+
+
+if __name__ == "__main__":    
     # プロジェクト ID、リージョン、データセット名、DICOM ストア名、および DICOM インスタンス ID の設定
     project_id = "dicom-rensyuu"
-    region = "asia-northeast1"
+    location = "asia-northeast1"
     dataset_id = "ohif-dataset"
     dicom_store_id = "ohif-datastore"
 
-    # DICOM ストアから DICOM インスタンス ID を取得
-    dicom_store_path = f"projects/{project_id}/locations/{region}/datasets/{dataset_id}/dicomStores/{dicom_store_id}"
-    url = f"{healthcare_service._baseUrl}{dicom_store_path}/dicomWeb/studies"
-        # Retrieve the access token.
-    access_token = credentials.token if credentials.token else credentials.refresh(Request()).token
+    lists = list_dicom_stores(project_id, location, dataset_id)
+    for list in lists:
+        print("dicom store一覧: ",list["name"])
 
-    headers = {"Authorization": f"Bearer {access_token}"}
-    try:
-        instances = healthcare_service._http.request(url, headers=headers)
-    except HttpError as error:
-        print(f"An error occurred: {error}")
-        instances = None
-
-    if instances:
-        print("Instances:")
-        print(instances[1].decode('utf-8'))
-    else:
-        print("No instances found.")
+    details = get_dicom_store(project_id, location, dataset_id, dicom_store_id)
+    print("dicom store詳細: ",details)
     
-    
-
-if __name__ == "__main__":
-    get_instance_ids_from_dicomestore()
+    instance_list = get_instance_ids_from_dicom_store(project_id, location, dataset_id, dicom_store_id)
+    # Instance IDを表示
+    for instance_id in instance_list:
+        print(instance_id)
