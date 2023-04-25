@@ -53,6 +53,7 @@ def get_instance_ids_from_dicom_store(project_id, location, dataset_id, dicom_st
     dicom_store_parent = f"projects/{project_id}/locations/{location}/datasets/{dataset_id}/dicomStores/{dicom_store_id}"
 
     instance_list = []
+    
 
     for study in client.list_dicom_store_studies(parent=dicom_store_parent):
         study_name = study.name
@@ -81,5 +82,4 @@ if __name__ == "__main__":
     
     instance_list = get_instance_ids_from_dicom_store(project_id, location, dataset_id, dicom_store_id)
     # Instance IDを表示
-    for instance_id in instance_list:
-        print(instance_id)
+    print(instance_list)
