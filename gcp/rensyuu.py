@@ -1,4 +1,6 @@
 from dicomweb_retrieve_instance import dicomweb_retrieve_instance
+from dicomweb_retrieve_rendered import dicomweb_retrieve_rendered
+from dicomweb_retrieve_study import dicomweb_retrieve_study
 from dicomweb_search_studies import dicomweb_search_studies
 from generate_credentials_client import generate_credentials_client
 from list_dicom_stores import list_dicom_stores
@@ -56,7 +58,22 @@ if __name__ == "__main__":
     # list_dicom_stores(project_id, location, dataset_id)
 
     dicomweb_search_instance(project_id, location, dataset_id, dicom_store_id)
-
+    study_uid = "1.2.392.3680043.9.7242.123.1201.636840621399212263.879957638"
+    dicomweb_retrieve_study(
+        project_id, location, dataset_id, dicom_store_id, study_uid
+    )
+    series_uid ="1.2.392.3680043.9.7242.123.1202.636840621399212263.55872160.1"
+    instance_uid = "1.2.392.3680043.9.7242.123.1203.636840621399212263.55872160.1.1"
+    dicomweb_retrieve_rendered(
+        project_id,
+        location,
+        dataset_id,
+        dicom_store_id,
+        study_uid,
+        series_uid,
+        instance_uid,
+    )
+    
     # dicomweb_retrieve_instance(
     #     project_id,
     #     location,

@@ -1,3 +1,6 @@
+from generate_credentials_client import generate_credentials_client
+from PIL import Image
+
 def dicomweb_retrieve_rendered(
     project_id,
     location,
@@ -21,9 +24,7 @@ def dicomweb_retrieve_rendered(
     from google.oauth2 import service_account
 
     # Gets credentials from the environment.
-    credentials = service_account.Credentials.from_service_account_file(
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
-    )
+    credentials, client = generate_credentials_client()
     scoped_credentials = credentials.with_scopes(
         ["https://www.googleapis.com/auth/cloud-platform"]
     )
@@ -65,5 +66,8 @@ def dicomweb_retrieve_rendered(
                 file_name
             )
         )
+        # Open and display the saved image.
+        img = Image.open("rendered_image.png")
+        img.show()
 
     return response

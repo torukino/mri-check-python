@@ -1,3 +1,6 @@
+from generate_credentials_client import generate_credentials_client
+
+
 def dicomweb_retrieve_study(
     project_id, location, dataset_id, dicom_store_id, study_uid
 ):
@@ -15,9 +18,7 @@ def dicomweb_retrieve_study(
     from google.oauth2 import service_account
 
     # Gets credentials from the environment.
-    credentials = service_account.Credentials.from_service_account_file(
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
-    )
+    credentials, cleint = generate_credentials_client()
     scoped_credentials = credentials.with_scopes(
         ["https://www.googleapis.com/auth/cloud-platform"]
     )

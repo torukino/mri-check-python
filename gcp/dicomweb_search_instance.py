@@ -7,6 +7,11 @@ def dicomweb_search_instance(project_id, location, dataset_id, dicom_store_id):
 
     See https://github.com/GoogleCloudPlatform/python-docs-samples/tree/main/healthcare/api-client/v1/dicom
     before running the sample."""
+    
+
+
+
+    
     # Imports Python's built-in "os" module
     import os
 
@@ -52,6 +57,26 @@ def dicomweb_search_instance(project_id, location, dataset_id, dicom_store_id):
     return instances
 
 if __name__ == "__main__": 
+    PatientName = "00100010"
+    PatientID = "00100020"
+    PatientBirthDate = "00100030"
+    PatientSex = "00100040"
+    SliceThickness = "00180050"
+    KVP = "00180060"
+    StudyInstanceUID = "0020000D"
+    SeriesInstanceUID = "0020000E"
+    InstanceUID = "00080018"
+    StudyID = "00200010"
+    SeriesNumber = "00200011"
+    InstanceNumber = "00200013"
+    SamplesPerPixel = "00280002"
+    Rows = "00280010"
+    Columns = "00280011"
+    BitsAllocated = "00280100"
+    BitsStored = "00280101"
+    HighBit = "00280102"
+    PixelRepresentation = "00280103"
+    
     project_id = "dicom-rensyuu"
     location = "asia-northeast1"
     dataset_id = "ohif-dataset"
@@ -59,4 +84,8 @@ if __name__ == "__main__":
     dcm_file = "public/dicomsample2/1.2.840.113619.2.274.10502719.2140785.23669.1512516045.813.dcm"
     
     instances = dicomweb_search_instance(project_id, location, dataset_id, dicom_store_id)
-    print(len(instances))
+    print("study uid",instances[0][StudyInstanceUID])
+    print("series uid",instances[0][SeriesInstanceUID])
+    print("instance uid",instances[0][InstanceUID])
+    
+    
