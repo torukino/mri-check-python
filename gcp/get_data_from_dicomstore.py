@@ -1,26 +1,9 @@
-from google.oauth2 import service_account
-from googleapiclient import discovery
-import os
-import json
-from google.auth.transport.requests import Request
 
-def generate_credentials_client():
-    api_version = "v1"
-    service_name = "healthcare"
-    # Returns an authorized API client by discovering the Healthcare API
-    # and using GOOGLE_APPLICATION_CREDENTIALS environment variable.
-    # 認証情報の設定
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    credentials_file = os.path.join(base_dir, '..', 'gcp_toruk.json') 
-    credentials = service_account.Credentials.from_service_account_file(credentials_file)
-    client = discovery.build(service_name, api_version, credentials=credentials)
-    return client
+from generate_credentials_client import generate_credentials_client
 
-    
-# DICOM ストアの詳細を取得する
 def list_dicom_stores(project_id, location, dataset_id):
 
-    client = generate_credentials_client()
+    credentials, client = generate_credentials_client()
 
     dicom_store_parent = "projects/{}/locations/{}/datasets/{}".format(project_id, location, dataset_id)
     dicom_stores = (
@@ -36,7 +19,7 @@ def list_dicom_stores(project_id, location, dataset_id):
 
 # DICOM ストアの詳細を取得する
 def get_dicom_store(project_id, location, dataset_id, dicom_store_id):
-    client = generate_credentials_client()
+    credentials, client = generate_credentials_client()
 
     dicom_store_parent = "projects/{}/locations/{}/datasets/{}".format(project_id, location, dataset_id)
     dicom_store_name = "{}/dicomStores/{}".format(dicom_store_parent, dicom_store_id)

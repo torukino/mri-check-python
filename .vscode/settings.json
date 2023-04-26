@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "D:/Dropbox/Jupyter/PYTHON/win/note-python-rev01/env_api/Lib/site-packages",
+        "./gcp"
+    ]
+}
