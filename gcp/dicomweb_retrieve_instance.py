@@ -68,3 +68,24 @@ def dicomweb_retrieve_instance(
         )
 
     return response
+
+
+
+if __name__ == "__main__": 
+    project_id = "dicom-rensyuu"
+    location = "asia-northeast1"
+    dataset_id = "ohif-dataset"
+    dicom_store_id = "ohif-datastore"
+    dcm_file = "public/dicomsample2/1.2.840.113619.2.274.10502719.2140785.23669.1512516045.813.dcm"
+    study_uid = "1.2.392.3680043.9.7242.123.1201.636840621399212263.879957638"
+    series_uid ="1.2.392.3680043.9.7242.123.1202.636840621399212263.55872160.1"
+    instance_uid = "1.2.392.3680043.9.7242.123.1203.636840621399212263.55872160.1.1"
+    dicomweb_retrieve_instance(
+        project_id,
+        location,
+        dataset_id,
+        dicom_store_id,
+        study_uid,
+        series_uid,
+        instance_uid,
+    )
